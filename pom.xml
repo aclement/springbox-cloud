@@ -23,7 +23,10 @@
     <parent>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter-parent</artifactId>
+<!--
         <version>1.0.1.RELEASE</version>
+-->
+        <version>Brixton.BUILD-SNAPSHOT</version>
         <relativePath/>
         <!-- lookup parent from repository -->
     </parent>

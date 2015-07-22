@@ -1,21 +1,30 @@
 package io.springbox.apigateway;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
-import org.springframework.cloud.security.oauth2.sso.EnableOAuth2Sso;
-import org.springframework.cloud.security.oauth2.sso.OAuth2SsoConfigurer;
-import org.springframework.cloud.security.oauth2.sso.OAuth2SsoConfigurerAdapter;
+import org.springframework.context.annotation.Bean;
+//import org.springframework.cloud.security.oauth2.sso.EnableOAuth2Sso;
+//import org.springframework.cloud.security.oauth2.sso.OAuth2SsoConfigurer;
+//import org.springframework.cloud.security.oauth2.sso.OAuth2SsoConfigurerAdapter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.oauth2.client.OAuth2ClientContext;
+import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.header.HeaderWriterFilter;
+import org.springframework.test.web.servlet.result.RequestResultMatchers;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.util.WebUtils;
@@ -31,20 +40,22 @@ import java.io.IOException;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableZuulProxy
-@EnableOAuth2Sso
 public class SpringboxApiGatewayApplication  {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringboxApiGatewayApplication.class, args);
     }
-
+    
     @Configuration
-    protected static class SecurityConfiguration extends OAuth2SsoConfigurerAdapter {
-
-        @Override
-        public void match(OAuth2SsoConfigurer.RequestMatchers matchers) {
-            matchers.anyRequest();
-        }
+    @EnableOAuth2Sso // do i need both of these?
+    @EnableAutoConfiguration // do I need both of these?
+    protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+//    protected static class SecurityConfiguration extends OAuth2SsoConfigurerAdapter {
+//
+//        @Override
+//        public void match(OAuth2SsoConfigurer.RequestMatchers matchers) {
+//            matchers.anyRequest();
+//        }
 
         @Override
         public void configure(HttpSecurity http) throws Exception {

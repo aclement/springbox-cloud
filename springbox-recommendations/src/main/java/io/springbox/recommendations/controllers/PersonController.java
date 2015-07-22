@@ -3,16 +3,16 @@ package io.springbox.recommendations.controllers;
 import io.springbox.recommendations.domain.Person;
 import io.springbox.recommendations.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.security.oauth2.resource.EnableOAuth2Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@EnableOAuth2Resource
+@EnableResourceServer
 public class PersonController {
 
     @Autowired
