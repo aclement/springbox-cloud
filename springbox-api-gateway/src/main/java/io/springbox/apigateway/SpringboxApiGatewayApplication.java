@@ -39,62 +39,72 @@ import java.io.IOException;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableZuulProxy
-public class SpringboxApiGatewayApplication  {
+public class SpringboxApiGatewayApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SpringboxApiGatewayApplication.class, args);
-    }
-    
-    @Configuration
-    @EnableOAuth2Sso // do i need both of these?
-    @EnableAutoConfiguration // do I need both of these?
-    protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-//    protected static class SecurityConfiguration extends OAuth2SsoConfigurerAdapter {
-//
-//        @Override
-//        public void match(OAuth2SsoConfigurer.RequestMatchers matchers) {
-//            matchers.anyRequest();
-//        }
+	public static void main(String[] args) {
+		SpringApplication.run(SpringboxApiGatewayApplication.class, args);
+	}
 
-        @Override
-        public void configure(HttpSecurity http) throws Exception {
-            http.logout().and().antMatcher("/**").authorizeRequests()
-                    .antMatchers("/index.html", "/home.html", "/", "/login", "/beans").permitAll()
-                    .antMatchers(HttpMethod.GET, "/recommendations/**","/reviews/**","/people/**","/movie/**","/catalog/**","/likes/**").permitAll()
-                    .anyRequest().authenticated().and().csrf()
-                    .csrfTokenRepository(csrfTokenRepository()).and()
-                    .addFilterBefore(new RequestContextFilter(), HeaderWriterFilter.class)
-                    .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
-        }
+	@Configuration
+	@EnableOAuth2Sso
+	protected static class SecurityConfiguration extends
+			WebSecurityConfigurerAdapter {
 
-        private Filter csrfHeaderFilter() {
-            return new OncePerRequestFilter() {
-                @Override
-                protected void doFilterInternal(HttpServletRequest request,
-                                                HttpServletResponse response, FilterChain filterChain)
-                        throws ServletException, IOException {
-                    CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class
-                            .getName());
-                    if (csrf != null) {
-                        Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
-                        String token = csrf.getToken();
-                        if (cookie == null || token != null
-                                && !token.equals(cookie.getValue())) {
-                            cookie = new Cookie("XSRF-TOKEN", token);
-                            cookie.setPath("/");
-                            response.addCookie(cookie);
-                        }
-                    }
-                    filterChain.doFilter(request, response);
-                }
-            };
-        }
+		@Override
+		public void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/**")
+					.logout()
+					.permitAll()
+					.and()
+					.antMatcher("/**")
+					.authorizeRequests()
+					.antMatchers("/index.html", "/home.html", "/", "/login",
+							"/beans")
+					.permitAll()
+					.antMatchers(HttpMethod.GET, "/recommendations/**",
+							"/reviews/**", "/people/**", "/movie/**",
+							"/catalog/**", "/likes/**")
+					.permitAll()
+					.anyRequest()
+					.authenticated()
+					.and()
+					.csrf()
+					.csrfTokenRepository(csrfTokenRepository())
+					.and()
+					.addFilterBefore(new RequestContextFilter(),
+							HeaderWriterFilter.class)
+					.addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
+		}
 
-        private CsrfTokenRepository csrfTokenRepository() {
-            HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-            repository.setHeaderName("X-XSRF-TOKEN");
-            return repository;
-        }
+		private Filter csrfHeaderFilter() {
+			return new OncePerRequestFilter() {
+				@Override
+				protected void doFilterInternal(HttpServletRequest request,
+						HttpServletResponse response, FilterChain filterChain)
+						throws ServletException, IOException {
+					CsrfToken csrf = (CsrfToken) request
+							.getAttribute(CsrfToken.class.getName());
+					if (csrf != null) {
+						Cookie cookie = WebUtils.getCookie(request,
+								"XSRF-TOKEN");
+						String token = csrf.getToken();
+						if (cookie == null || token != null
+								&& !token.equals(cookie.getValue())) {
+							cookie = new Cookie("XSRF-TOKEN", token);
+							cookie.setPath("/");
+							response.addCookie(cookie);
+						}
+					}
+					filterChain.doFilter(request, response);
+				}
+			};
+		}
 
-    }
+		private CsrfTokenRepository csrfTokenRepository() {
+			HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+			repository.setHeaderName("X-XSRF-TOKEN");
+			return repository;
+		}
+
+	}
 }

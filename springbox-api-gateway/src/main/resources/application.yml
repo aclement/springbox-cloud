@@ -1,10 +1,6 @@
 server:
   port: 9000
 
-security:
-  user:
-    password: password
-
 zuul:
   routes:
     springbox-catalog: /catalog/**
@@ -14,12 +10,10 @@ zuul:
       path: /user/**
       url: http://localhost:9999/uaa/user
 
-spring:
+security:
+  user:
+    password: password
   oauth2:
-    sso:
-      home:
-        secure: false
-        path: /,/**/*.html
     client:
       accessTokenUri: http://localhost:9999/uaa/oauth/token
       userAuthorizationUri: http://localhost:9999/uaa/oauth/authorize
@@ -27,7 +21,6 @@ spring:
       clientSecret: acmesecret
     resource:
       userInfoUri: http://localhost:9999/uaa/user
-
 
 logging:
   level:
